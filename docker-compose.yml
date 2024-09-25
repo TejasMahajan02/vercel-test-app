@@ -1,0 +1,30 @@
+#version: '3'
+services:
+  api:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    # image: registry.gitlab.com/spundan-v2/imentorlly/imentorlly-api
+    container_name: api
+    restart: always
+    networks:
+      - app-network
+    ports:
+      - "3000:3000"
+
+  webserver:
+    image: nginx:mainline-alpine
+    container_name: webserver
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./app-conf:/etc/nginx/conf.d
+    depends_on:
+      - api
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
